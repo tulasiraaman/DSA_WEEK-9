@@ -1,0 +1,48 @@
+// Comparator to order entries by frequency, then lexicographically
+class FreqComparator implements Comparator<Map.Entry<String, Integer>> {
+    @Override
+    public int compare(Map.Entry<String, Integer> a, Map.Entry<String, Integer> b) {
+        // If frequencies are equal, compare words in reverse lexicographical order
+        // (so that when we poll from the min-heap, lexicographically smaller words survive)
+        if (a.getValue().equals(b.getValue())) {
+            return b.getKey().compareTo(a.getKey());
+        }
+        // Otherwise, compare by frequency (smaller frequency comes first in the min-heap)
+        return a.getValue() - b.getValue();
+    }
+}
+
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        // Step 1: Count frequencies of each word
+        Map<String, Integer> map = new HashMap<>();
+        for (String word : words) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+
+        // Step 2: Use a min-heap with custom comparator
+        // Heap will keep the k most frequent words
+        PriorityQueue<Map.Entry<String, Integer>> heap = new PriorityQueue<>(new FreqComparator());
+
+        // Step 3: Push entries into heap
+        for (Map.Entry<String, Integer> data : map.entrySet()) {
+            heap.offer(data);
+            // If heap grows beyond k, remove the least frequent (or lexicographically largest if tie)
+            if (heap.size() > k) heap.poll();
+        }
+
+        // Step 4: Build result list
+        List<String> result = new ArrayList<>();
+        // Polling from heap gives least frequent first, so insert at front to reverse order
+        while (!heap.isEmpty()) {
+            result.add(0, heap.poll().getKey());
+        }
+
+        // Step 5: Return top k frequent words
+        return result;
+    }
+}
+// TC - O(n + m log k), SC - O(m + k)
+// n = length of words
+// m = size of unique words in map
+// k = insertion/Deletion in heap
