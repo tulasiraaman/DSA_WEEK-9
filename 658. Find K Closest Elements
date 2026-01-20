@@ -1,0 +1,37 @@
+class ClosestComparator implements Comparator<Integer> {
+    private int x;
+
+    ClosestComparator(int x){
+        this.x = x;
+    }
+
+    @Override
+    public int compare(Integer a, Integer b) {
+        // Calculate absolute distance from x
+        int distA = Math.abs(a - x);
+        int distB = Math.abs(b - x);
+
+        // If distances are equal, prefer the smaller value
+        if (distA == distB) {
+            return b - a; // smaller element comes first
+        }
+        // For max heap: larger distance should come first
+        return distB - distA;
+    }
+}
+
+class Solution {
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(new ClosestComparator(x));
+
+        for(int n: arr){
+            maxHeap.offer(n);
+            if(maxHeap.size() > k) maxHeap.poll();
+        }
+
+        List<Integer> result = new ArrayList<>(maxHeap);
+        Collections.sort(result);
+        return result;
+    }
+}
+// TC - O(n . log k), SC - O(k) -->  because the heap size is capped at k
