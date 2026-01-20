@@ -1,0 +1,50 @@
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        int[] freq = new int[26];
+        for (char c : tasks) {
+            freq[c - 'A']++;
+        }
+
+        // Find max frequency
+        int maxFreq = 0;
+        for (int f : freq) {
+            maxFreq = Math.max(maxFreq, f);
+        }
+
+        // Count how many tasks have max frequency
+        int countMax = 0;
+        for (int f : freq) {
+            if (f == maxFreq) countMax++;
+        }
+
+        // Apply formula
+        int partCount = (maxFreq - 1) * (n + 1) + countMax;
+        return Math.max(tasks.length, partCount);
+    }
+
+    public int leasttInterval(char[] tasks, int n) {
+        int[] freq = new int[26];
+        for (char c : tasks) freq[c - 'A']++;
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        for (int f : freq) if (f > 0) pq.offer(f);
+
+        int time = 0;
+        while (!pq.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            int cycle = n + 1;
+
+            while (cycle > 0 && !pq.isEmpty()) {
+                int curr = pq.poll();
+                if (curr - 1 > 0) temp.add(curr - 1);
+                time++;
+                cycle--;
+            }
+
+            for (int t : temp) pq.offer(t);
+
+            if (!pq.isEmpty()) time += cycle; // idle slots
+        }
+        return time;
+    }
+}
