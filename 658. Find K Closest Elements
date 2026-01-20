@@ -21,7 +21,8 @@ class ClosestComparator implements Comparator<Integer> {
 }
 
 class Solution {
-    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+    // TC - O(n . log k + k . log k), SC - O(k) -->  because the heap size is capped at k
+    public List<Integer> findCllosestElements(int[] arr, int k, int x) {
         PriorityQueue<Integer> maxHeap = new PriorityQueue<>(new ClosestComparator(x));
 
         for(int n: arr){
@@ -33,5 +34,49 @@ class Solution {
         Collections.sort(result);
         return result;
     }
+
+    public List<Integer> finddClosestElements(int[] arr, int k, int x) {
+        // Time: O(log (n-k)+k), space: O(1)
+        int left = 0;
+        int right = arr.length - k;
+
+        // Binary search for the best starting index
+        while (left < right) {
+            int mid = (left + right) / 2;
+            // Compare distances between x and arr[mid] vs arr[mid+k]
+            if (x - arr[mid] > arr[mid + k] - x) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        // Collect k elements starting from left
+        List<Integer> result = new ArrayList<>();
+        for (int i = left; i < left + k; i++) {
+            result.add(arr[i]);
+        }
+        return result;
+    }
+
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        int left = 0;
+        int right = arr.length - 1;
+
+        // Shrink window until only k elements remain
+        while (right - left + 1 > k) {
+            if (Math.abs(arr[left] - x) > Math.abs(arr[right] - x)) {
+                left++;   // drop left element
+            } else {
+                right--;  // drop right element
+            }
+        }
+
+        // Collect result
+        List<Integer> result = new ArrayList<>();
+        for (int i = left; i <= right; i++) {
+            result.add(arr[i]);
+        }
+        return result;
+    }// TC: O(n-k), SC: O(1)
 }
-// TC - O(n . log k), SC - O(k) -->  because the heap size is capped at k
