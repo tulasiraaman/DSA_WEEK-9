@@ -1,0 +1,17 @@
+class Solution {
+    public int maxSubarraySum(int[] arr, int k) {
+        // Code here
+        int sum = 0, max = arr[0];
+        for (int i = 0; i < k; i++) {
+            sum += arr[i];
+        }
+        max = sum;
+
+        // Slide the window
+        for (int i = k; i < arr.length; i++) {
+            sum += arr[i] - arr[i - k]; // add new element, remove old
+            max = Math.max(max, sum);
+        }
+        return max;
+    }
+}
